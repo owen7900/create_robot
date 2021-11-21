@@ -5,5 +5,8 @@
 
   <xacro:create_base wheel_separation="0.235" base_diameter="0.3485">
     <mesh filename="package://create_description/meshes/create_2.dae" />
-  </xacro:create_base>
+</xacro:create_base>
+
+<xacro:include filename="$(find create_description)/urdf/rplidar.urdf.xacro"/>
+
 </robot>
