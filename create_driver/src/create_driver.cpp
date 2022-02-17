@@ -27,6 +27,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 #include "create_driver/create_driver.h"
 
+#include <std_msgs/msg/detail/float32__struct.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include <chrono>
@@ -123,6 +124,7 @@ CreateDriver::CreateDriver()
   undock_sub_ = create_subscription<std_msgs::msg::Empty>("undock", 10, std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
   define_song_sub_ = create_subscription<create_msgs::msg::DefineSong>("define_song", 10, std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
   play_song_sub_ = create_subscription<create_msgs::msg::PlaySong>("play_song", 10, std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
+  vacuum_sub_ = create_subscription<std_msgs::msg::Float32>("vacuum_level", 10, std::bind(&CreateDriver::vacuumCallback, this, std::placeholders::_1));
 
   // Setup publishers
   odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 30);
@@ -215,7 +217,7 @@ void CreateDriver::powerLEDCallback(std_msgs::msg::UInt8MultiArray::UniquePtr ms
 
 void CreateDriver::setASCIICallback(std_msgs::msg::UInt8MultiArray::UniquePtr msg)
 {
-  bool result;
+  bool result = false;
   if (msg->data.size() < 1)
   {
     RCLCPP_ERROR(get_logger(), "[CREATE] No ASCII digits provided");
@@ -277,6 +279,14 @@ void CreateDriver::playSongCallback(create_msgs::msg::PlaySong::UniquePtr msg)
   if (!robot_->playSong(msg->song))
   {
     RCLCPP_ERROR_STREAM(get_logger(), "[CREATE] Failed to play song " << msg->song);
+  }
+}
+
+void CreateDriver::vacuumCallback(std_msgs::msg::Float32::UniquePtr msg)
+{
+  if(!robot_->setVacuumMotor(msg->data))
+  {
+    RCLCPP_ERROR(get_logger(), "[CREATE] could not set vacuum");
   }
 }
 
