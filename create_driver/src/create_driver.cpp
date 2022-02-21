@@ -27,8 +27,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 #include "create_driver/create_driver.h"
 
-#include <std_msgs/msg/detail/float32__struct.hpp>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <chrono>
 #include <string>
@@ -114,30 +113,20 @@ CreateDriver::CreateDriver()
   }
 
   // Setup subscribers
-  cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
-      "cmd_vel", 1, std::bind(&CreateDriver::cmdVelCallback, this, std::placeholders::_1));
-  debris_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "debris_led", 10, std::bind(&CreateDriver::debrisLEDCallback, this, std::placeholders::_1));
-  spot_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "spot_led", 10, std::bind(&CreateDriver::spotLEDCallback, this, std::placeholders::_1));
-  dock_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "dock_led", 10, std::bind(&CreateDriver::dockLEDCallback, this, std::placeholders::_1));
-  check_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "check_led", 10, std::bind(&CreateDriver::checkLEDCallback, this, std::placeholders::_1));
-  power_led_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-      "power_led", 10, std::bind(&CreateDriver::powerLEDCallback, this, std::placeholders::_1));
-  set_ascii_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-      "set_ascii", 10, std::bind(&CreateDriver::setASCIICallback, this, std::placeholders::_1));
-  dock_sub_ = create_subscription<std_msgs::msg::Empty>(
-      "dock", 10, std::bind(&CreateDriver::dockCallback, this, std::placeholders::_1));
-  undock_sub_ = create_subscription<std_msgs::msg::Empty>(
-      "undock", 10, std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
-  define_song_sub_ = create_subscription<create_msgs::msg::DefineSong>(
-      "define_song", 10, std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
-  play_song_sub_ = create_subscription<create_msgs::msg::PlaySong>(
-      "play_song", 10, std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
-  vacuum_sub_ = create_subscription<std_msgs::msg::Float32>(
-      "vacuum_level", 10, std::bind(&CreateDriver::vacuumCallback, this, std::placeholders::_1));
+  cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 1, std::bind(&CreateDriver::cmdVelCallback, this, std::placeholders::_1));
+  debris_led_sub_ = create_subscription<std_msgs::msg::Bool>("debris_led", 10, std::bind(&CreateDriver::debrisLEDCallback, this, std::placeholders::_1));
+  spot_led_sub_ = create_subscription<std_msgs::msg::Bool>("spot_led", 10, std::bind(&CreateDriver::spotLEDCallback, this, std::placeholders::_1));
+  dock_led_sub_ = create_subscription<std_msgs::msg::Bool>("dock_led", 10, std::bind(&CreateDriver::dockLEDCallback, this, std::placeholders::_1));
+  check_led_sub_ = create_subscription<std_msgs::msg::Bool>("check_led", 10, std::bind(&CreateDriver::checkLEDCallback, this, std::placeholders::_1));
+  power_led_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>("power_led", 10, std::bind(&CreateDriver::powerLEDCallback, this, std::placeholders::_1));
+  set_ascii_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>("set_ascii", 10, std::bind(&CreateDriver::setASCIICallback, this, std::placeholders::_1));
+  dock_sub_ = create_subscription<std_msgs::msg::Empty>("dock", 10, std::bind(&CreateDriver::dockCallback, this, std::placeholders::_1));
+  undock_sub_ = create_subscription<std_msgs::msg::Empty>("undock", 10, std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
+  define_song_sub_ = create_subscription<create_msgs::msg::DefineSong>("define_song", 10, std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
+  play_song_sub_ = create_subscription<create_msgs::msg::PlaySong>("play_song", 10, std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
+  side_brush_motor_sub_ = create_subscription<create_msgs::msg::MotorSetpoint>("side_brush_motor", 10, std::bind(&CreateDriver::sideBrushMotor, this, std::placeholders::_1));
+  main_brush_motor_sub_ = create_subscription<create_msgs::msg::MotorSetpoint>("main_brush_motor", 10, std::bind(&CreateDriver::mainBrushMotor, this, std::placeholders::_1));
+  vacuum_motor_sub_ = create_subscription<create_msgs::msg::MotorSetpoint>("vacuum_motor", 10, std::bind(&CreateDriver::vacuumBrushMotor, this, std::placeholders::_1));
 
   // Setup publishers
   odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 30);
@@ -232,7 +221,7 @@ void CreateDriver::powerLEDCallback(std_msgs::msg::UInt8MultiArray::UniquePtr ms
 
 void CreateDriver::setASCIICallback(std_msgs::msg::UInt8MultiArray::UniquePtr msg)
 {
-  bool result = false;
+  bool result;
   if (msg->data.size() < 1)
   {
     RCLCPP_ERROR(get_logger(), "[CREATE] No ASCII digits provided");
@@ -262,7 +251,7 @@ void CreateDriver::setASCIICallback(std_msgs::msg::UInt8MultiArray::UniquePtr ms
 
 void CreateDriver::dockCallback(std_msgs::msg::Empty::UniquePtr msg)
 {
-  (void)msg;
+  (void) msg;
 
   robot_->setMode(create::MODE_PASSIVE);
 
@@ -275,7 +264,7 @@ void CreateDriver::dockCallback(std_msgs::msg::Empty::UniquePtr msg)
 
 void CreateDriver::undockCallback(std_msgs::msg::Empty::UniquePtr msg)
 {
-  (void)msg;
+  (void) msg;
 
   // Switch robot back to FULL mode
   robot_->setMode(create::MODE_FULL);
@@ -297,11 +286,25 @@ void CreateDriver::playSongCallback(create_msgs::msg::PlaySong::UniquePtr msg)
   }
 }
 
-void CreateDriver::vacuumCallback(std_msgs::msg::Float32::UniquePtr msg)
+void CreateDriver::sideBrushMotor(create_msgs::msg::MotorSetpoint::UniquePtr msg)
 {
-  if (!robot_->setVacuumMotor(msg->data))
+  if (!robot_->setSideMotor(msg->duty_cycle))
   {
-    RCLCPP_ERROR(get_logger(), "[CREATE] could not set vacuum");
+    RCLCPP_ERROR_STREAM(get_logger(), "[CREATE] Failed to set duty cycle " << msg->duty_cycle << " for side brush motor");
+  }
+}
+void CreateDriver::mainBrushMotor(create_msgs::msg::MotorSetpoint::UniquePtr msg)
+{
+  if (!robot_->setMainMotor(msg->duty_cycle))
+  {
+    RCLCPP_ERROR_STREAM(get_logger(), "[CREATE] Failed to set duty cycle " << msg->duty_cycle << " for main motor");
+  }
+}
+void CreateDriver::vacuumBrushMotor(create_msgs::msg::MotorSetpoint::UniquePtr msg)
+{
+  if (!robot_->setVacuumMotor(msg->duty_cycle))
+  {
+    RCLCPP_ERROR_STREAM(get_logger(), "[CREATE] Failed to set duty cycle " << msg->duty_cycle << " for vacuum motor");
   }
 }
 
@@ -318,8 +321,7 @@ bool CreateDriver::update()
   publishCliff();
 
   // If last velocity command was sent longer than latch duration, stop robot
-  if (last_cmd_vel_time_.nanoseconds() == 0 ||
-      now() - last_cmd_vel_time_ >= rclcpp::Duration::from_seconds(latch_duration_))
+  if (last_cmd_vel_time_.nanoseconds() == 0 || now() - last_cmd_vel_time_ >= rclcpp::Duration::from_seconds(latch_duration_))
   {
     robot_->drive(0, 0);
   }
