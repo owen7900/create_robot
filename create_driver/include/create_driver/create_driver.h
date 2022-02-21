@@ -52,12 +52,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 
-static const double COVARIANCE[36] = {1e-5, 1e-5, 0.0,  0.0,  0.0,  1e-5,  // NOLINT(whitespace/braces)
-                                      1e-5, 1e-5, 0.0,  0.0,  0.0,  1e-5,
-                                      0.0,  0.0,  1e-5, 0.0,  0.0,  0.0,
-                                      0.0,  0.0,  0.0,  1e-5, 0.0,  0.0,
-                                      0.0,  0.0,  0.0,  0.0,  1e-5, 0.0,
-                                      1e-5, 1e-5, 0.0,  0.0,  0.0,  1e-5};
+static const double COVARIANCE[36] = {
+  1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5,  // NOLINT(whitespace/braces)
+  1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5, 0.0, 0.0,  1e-5, 0.0,  0.0,  0.0, 0.0, 0.0, 0.0,
+  1e-5, 0.0,  0.0, 0.0, 0.0, 0.0,  0.0, 1e-5, 0.0,  1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5
+};
 
 class CreateDriver : public rclcpp::Node
 {
