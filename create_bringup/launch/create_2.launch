@@ -8,6 +8,7 @@
     <param name="robot_model" value="CREATE_2" />
     <remap from="cmd_vel" to="roomba/cmd_vel" />
     <remap from="bumper" to="roomba/bumper" />
+    <remap from="cliff" to="roomba/cliff" />
   </node>
 
   <!-- Robot description -->
