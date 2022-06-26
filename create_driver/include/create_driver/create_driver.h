@@ -129,6 +129,7 @@ private:
   double loop_hz_;
   bool publish_tf_;
   int baud_;
+  bool oi_mode_workaround_;
 
   void cmdVelCallback(geometry_msgs::msg::Twist::UniquePtr msg);
   void debrisLEDCallback(std_msgs::msg::Bool::UniquePtr msg);
@@ -142,7 +143,7 @@ private:
   void defineSongCallback(create_msgs::msg::DefineSong::UniquePtr msg);
   void playSongCallback(create_msgs::msg::PlaySong::UniquePtr msg);
   void sideBrushMotor(create_msgs::msg::MotorSetpoint::UniquePtr msg);
-  void mainBrushMotor( create_msgs::msg::MotorSetpoint::UniquePtr msg);
+  void mainBrushMotor(create_msgs::msg::MotorSetpoint::UniquePtr msg);
   void vacuumBrushMotor(create_msgs::msg::MotorSetpoint::UniquePtr msg);
 
   bool update();
