@@ -27,7 +27,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 #include "create_driver/create_driver.h"
 
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <chrono>
 #include <string>
@@ -91,8 +91,7 @@ CreateDriver::CreateDriver()
   robot_->setMode(create::MODE_FULL);
 
   // Show robot's battery level
-  RCLCPP_INFO(get_logger(), "[CREATE] Battery level %.2f %%",
-              (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
+  RCLCPP_INFO(get_logger(), "[CREATE] Battery level %.2f %%", (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
 
   // Set frame_id's
   mode_msg_.header.frame_id = base_frame_;
@@ -165,8 +164,8 @@ CreateDriver::CreateDriver()
   diagnostics_.setHardwareID(robot_model_name);
 
   // Setup update loop.
-  const auto loop_period =
-      std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(1.0 / loop_hz_));
+  const auto loop_period = std::chrono::duration_cast<std::chrono::nanoseconds>
+    (std::chrono::duration<double>(1.0 / loop_hz_));
   loop_timer_ = create_wall_timer(loop_period, std::bind(&CreateDriver::spinOnce, this));
 
   RCLCPP_INFO(get_logger(), "[CREATE] Ready.");
