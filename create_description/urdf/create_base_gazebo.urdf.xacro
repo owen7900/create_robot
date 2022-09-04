@@ -11,7 +11,6 @@
         <wheel_diameter>${wheel_radius * 2}</wheel_diameter>
         <wheel_torque>${wheel_torque}</wheel_torque>
         <!--wheelAcceleration>${wheel_accel}</wheelAcceleration-->
-        <command_topic>cmd_vel</command_topic>
         <odometry_topic>odom</odometry_topic>
         <odometry_frame>odom</odometry_frame>
         <robot_base_frame>base_footprint</robot_base_frame>
