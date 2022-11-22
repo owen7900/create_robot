@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot name="sensor_rplidar" xmlns:xacro="http://ros.org/wiki/xacro">
+	<!-- Joints and Links, standard URDF stuff -->
+	<link name="camera">
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.1 0.1 0.1" />
+			</geometry>
+		</collision>
+
+		<vision>
+			<origin xyz="0 0 0.1" rpy="1.5707 0 0" />
+			<geometry>
+				<box size="0.1 0.1 0.1" />
+				<meshfile name="package://create_description/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
+			</geometry>
+		</vision>
+
+		<inertial>
+			<mass value="1e-5" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+		</inertial>
+	</link>
+
+	<joint name="camera_joint" type="fixed">
+		<axis xyz="0 1 0" />
+		<origin xyz="0 0 0.1" rpy="0 0 0 " />
+		<parent link="base_link" />
+		<child link="camera" />
+	</joint>
+
+	<gazebo reference="camera">
+		<sensor type="camera" name="george_cam">
+			<pose>0 0 0 0 0 0</pose>
+			<update_rate>20</update_rate>
+			<camera>
+				<image width="640" height="480" hfov="1.5708" format="RGB8" near="0.01" far="50.0" />
+			</camera>
+			<plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+				<alwaysOn>true</alwaysOn>
+				<updateRate>0.0</updateRate>
+				<cameraName>george_cam</cameraName>
+				<imageTopicName>image_raw</imageTopicName>
+				<cameraInfoTopicName>camera_info</cameraInfoTopicName>
+				<frameName>camera</frameName>
+				<hackBaseline>0.07</hackBaseline>
+				<distortionK1>0.0</distortionK1>
+				<distortionK2>0.0</distortionK2>
+				<distortionK3>0.0</distortionK3>
+				<distortionT1>0.0</distortionT1>
+				<distortionT2>0.0</distortionT2>
+			</plugin>
+		</sensor>
+	</gazebo>
+
+
+</robot>
