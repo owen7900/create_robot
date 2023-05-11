@@ -13,13 +13,13 @@
     <mesh filename="package://create_description/meshes/create_2.dae" />
   </xacro:create_base>
 
-  <!-- <xacro:include filename="$(find create_description)/urdf/rplidar.urdf.xacro" /> -->
+  <xacro:include filename="$(find create_description)/urdf/rplidar.urdf.xacro" /> 
   <!-- <xacro:include filename="$(find create_description)/urdf/camera.urdf.xacro" /> -->
-
+  <!--
   <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />
   <xacro:VLP-16 parent="base_link" name="velodyne" topic="/velodyne_points"
     organize_cloud="${organize_cloud}" hz="10" samples="440" gpu="${gpu}">
     <origin xyz="0 0 0.2" rpy="0 0 0" />
   </xacro:VLP-16>
-
+  -->
 </robot>
