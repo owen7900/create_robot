@@ -1,25 +1,35 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="sim_create_base">
-    <gazebo>
-      <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-        <always_on>true</always_on>
-        <update_rate>${diffdrive_update_rate}</update_rate>
-        <left_joint>left_wheel_joint</left_joint>
-        <right_joint>right_wheel_joint</right_joint>
-        <wheel_separation>${wheel_separation}</wheel_separation>
-        <wheel_diameter>${wheel_radius * 2}</wheel_diameter>
-        <wheel_torque>${wheel_torque}</wheel_torque>
-        <!--wheelAcceleration>${wheel_accel}</wheelAcceleration-->
-        <odometry_topic>odom</odometry_topic>
-        <odometry_frame>odom</odometry_frame>
-        <robot_base_frame>base_footprint</robot_base_frame>
-        <publish_wheel_tf>true</publish_wheel_tf>
-        <publish_odom_tf>true</publish_odom_tf>
-        <publish_odom>true</publish_odom>
-        <odometry_source>1</odometry_source> <!-- 0 for encoders -->
-      </plugin>
+    <ros2_control name="IgnitionSystem" type="system">
+      <hardware>
+        <plugin>ign_ros2_control/IgnitionSystem</plugin>
+      </hardware>
+      <joint name="left_wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-10</param>
+          <param name="max">10</param>
+        </command_interface>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="right_wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-10</param>
+          <param name="max">10</param>
+        </command_interface>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
 
+    <gazebo>
+      <!-- Joint state publisher -->
+      <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+        <parameters>$(find create_description)/config/diff_drive_controller_velocity.yaml</parameters>
+      </plugin>
+    </gazebo>
+    <gazebo>
       <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
         <always_on>true</always_on>
         <update_rate>100.0</update_rate>
@@ -29,7 +39,8 @@
         <frame_name>map</frame_name>
         <xyz_offsets>0 0 0</xyz_offsets>
         <rpy_offsets>0 0 0</rpy_offsets>
-        <!--<interface:position name="p3d_base_position"/>-->
+        <!--<interface:position
+        name="p3d_base_position"/>-->
       </plugin>
     </gazebo>
 
@@ -70,19 +81,19 @@
   </xacro:macro>
 
   <xacro:macro name="sim_imu">
-      <gazebo>
-          <sensor>
-      <plugin name="imu_controller" filename="libgazebo_ros_imu_sensor.so">
-        <always_on>true</always_on>
-        <update_rate>30</update_rate>
-        <body_name>gyro_link</body_name>
-        <topic_name>imu/data</topic_name>
-        <service_name>imu/is_calibrated</service_name>
-        <gaussian_noise>${0.0017*0.0017}</gaussian_noise>
-        <xyz_offsets>0 0 0</xyz_offsets>
-        <rpy_offsets>0 0 0</rpy_offsets>
-    </plugin>
-</sensor>
+    <gazebo>
+      <sensor>
+        <plugin name="imu_controller" filename="libgazebo_ros_imu_sensor.so">
+          <always_on>true</always_on>
+          <update_rate>30</update_rate>
+          <body_name>gyro_link</body_name>
+          <topic_name>imu/data</topic_name>
+          <service_name>imu/is_calibrated</service_name>
+          <gaussian_noise>${0.0017*0.0017}</gaussian_noise>
+          <xyz_offsets>0 0 0</xyz_offsets>
+          <rpy_offsets>0 0 0</rpy_offsets>
+        </plugin>
+      </sensor>
     </gazebo>
   </xacro:macro>
 
