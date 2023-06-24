@@ -13,7 +13,7 @@
     <mesh filename="package://create_description/meshes/create_2.dae" />
   </xacro:create_base>
 
-  <xacro:include filename="$(find create_description)/urdf/rplidar.urdf.xacro" /> 
+  <xacro:include filename="$(find create_description)/urdf/rplidar.urdf.xacro" />
   <!-- <xacro:include filename="$(find create_description)/urdf/camera.urdf.xacro" /> -->
   <!--
   <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />
